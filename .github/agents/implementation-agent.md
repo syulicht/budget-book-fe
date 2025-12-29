@@ -2,7 +2,7 @@
 name: Implementation Agent
 description: React + TypeScript + AWS Cognito認証を使用した家計簿アプリのフロントエンド実装を支援するエージェント
 target: vscode
-tools: ['read', 'edit', 'search', 'execute', 'serena/*']
+tools: ['read', 'edit', 'search', 'execute', 'serena/*', 'com.figma.mcp/mcp/*']
 infer: true
 ---
 
