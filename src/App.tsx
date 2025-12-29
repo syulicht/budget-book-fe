@@ -1,34 +1,90 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { useAuth } from "react-oidc-context";
+import type { CognitoUser } from "./types/auth";
 import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const auth = useAuth();
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+  const signOutRedirect = () => {
+    const clientId = import.meta.env.VITE_COGNITO_APP_CLIENT_ID;
+    const logoutUri = import.meta.env.VITE_LOGOUT_URI;
+    const cognitoDomain = import.meta.env.VITE_COGNITO_DOMAIN;
+
+    // ローカルのトークンをクリア
+    auth.removeUser();
+
+    // Cognitoのセッションもクリア
+    globalThis.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(
+      logoutUri
+    )}`;
+  };
+
+  // ローディング中
+  if (auth.isLoading) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "50px" }}>
+        <h2>読み込み中...</h2>
       </div>
-      <h1>Vite + React!!!</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+    );
+  }
+
+  // エラー発生時
+  if (auth.error) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "50px", color: "red" }}>
+        <h2>エラーが発生しました</h2>
+        <p>{auth.error.message}</p>
+      </div>
+    );
+  }
+
+  // 認証済み
+  if (auth.isAuthenticated) {
+    const user = auth.user as CognitoUser;
+    const username = user?.profile?.["cognito:username"];
+
+    return (
+      <div style={{ padding: "20px" }}>
+        <h1>ようこそ！{username}さん</h1>
+
+        <button
+          onClick={signOutRedirect}
+          style={{
+            marginTop: "20px",
+            padding: "10px 20px",
+            fontSize: "16px",
+            cursor: "pointer",
+            backgroundColor: "#ff4444",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+          }}
+        >
+          ログアウト
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    );
+  }
+
+  // 未認証
+  return (
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
+      <button
+        onClick={() => auth.signinRedirect()}
+        style={{
+          marginTop: "20px",
+          padding: "10px 30px",
+          fontSize: "16px",
+          cursor: "pointer",
+          backgroundColor: "#4CAF50",
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+        }}
+      >
+        ログイン
+      </button>
+    </div>
   );
 }
 
