@@ -10,102 +10,27 @@ infer: true
 
 ## プロジェクト概要
 
-家計簿アプリケーションのフロントエンド。React + TypeScript + Vite で構築され、AWS Cognito による OIDC 認証を実装。
+家計簿アプリケーションのフロントエンド。React + TypeScript + Vite で構築され、AWS Cognito Hosted UI による OIDC 認証を実装。
 
 ## テックスタック
 
 - React 19.2.0
 - TypeScript 5.9.3（strict mode）
 - Vite 7.2.4
-- oidc-client-ts + react-oidc-context
+- TanStack Router - ルーティング
+- TanStack Query - データフェッチング
+- Tailwind CSS - スタイリング
+- oidc-client-ts + react-oidc-context - 認証
 
 ## コーディング規約
 
-### TypeScript
-
-- 型定義を明示する（`any` は禁止）
+- TypeScript strict mode を使用（`any` は禁止）
 - 型定義は `src/types/` に配置
-- strict mode を使用
-
-```typescript
-// ✅ Good
-interface UserProps {
-  name: string;
-  email: string;
-}
-
-// ❌ Bad - any の使用
-const User = ({ name, email }: any) => {};
-```
-
-### React
-
 - 関数コンポーネントのみ使用
-- Hooks を活用（useState, useEffect, useContext など）
-- コンポーネント名は PascalCase
-- ファイル名は `ComponentName.tsx`
-
-```typescript
-// ✅ Good
-const UserProfile: React.FC<Props> = ({ userId }) => {
-  const [user, setUser] = useState<User | null>(null);
-  // ...
-};
-```
-
-## 認証実装
-
-### 基本構成（main.tsx）
-
-```typescript
-import { AuthProvider } from "react-oidc-context";
-
-const cognitoAuthConfig = {
-  authority: `https://cognito-idp.${region}.amazonaws.com/${userPoolId}`,
-  client_id: import.meta.env.VITE_COGNITO_APP_CLIENT_ID,
-  redirect_uri: import.meta.env.VITE_REDIRECT_URI,
-  response_type: "code",
-  scope: "openid email",
-};
-
-<AuthProvider {...cognitoAuthConfig}>
-  <App />
-</AuthProvider>;
-```
-
-### 認証状態の使用
-
-```typescript
-import { useAuth } from "react-oidc-context";
-
-const MyComponent: React.FC = () => {
-  const auth = useAuth();
-
-  if (auth.isLoading) return <Loading />;
-  if (auth.error) return <Error message={auth.error.message} />;
-  if (!auth.isAuthenticated) {
-    return <button onClick={() => auth.signinRedirect()}>ログイン</button>;
-  }
-
-  const user = auth.user as CognitoUser;
-  return <div>Welcome, {user.profile["cognito:username"]}</div>;
-};
-```
-
-### ログアウト
-
-```typescript
-const handleLogout = () => {
-  auth.removeUser();
-  window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(
-    logoutUri
-  )}`;
-};
-```
+- コンポーネント名は PascalCase、ファイル名は `ComponentName.tsx`
+- 環境変数は `import.meta.env.VITE_*` でアクセス
 
 ## 環境変数
-
-### 必須変数
 
 ```
 VITE_AWS_REGION
@@ -114,34 +39,72 @@ VITE_COGNITO_APP_CLIENT_ID
 VITE_REDIRECT_URI
 VITE_LOGOUT_URI
 VITE_COGNITO_DOMAIN
+VITE_API_BASE_URL
 ```
 
-### アクセス方法
-
-```typescript
-// ✅ Vite の方法
-const region = import.meta.env.VITE_AWS_REGION;
-
-// ❌ Node.js の方法（使用禁止）
-const region = process.env.VITE_AWS_REGION;
-```
-
-## ファイル構造
+## ファイル構造（概要）
 
 ```
 src/
-├── App.tsx           # メインコンポーネント
-├── main.tsx          # エントリーポイント
-├── types/            # 型定義
-│   └── auth.ts
-├── assets/           # 静的ファイル
-└── *.css             # スタイル
+├── routes/                     # TanStack Router のルート定義
+├── features/                   # 機能ごとのモジュール (auth, transactions, categories, dashboard)
+│   └── [機能]/
+│       ├── components/
+│       ├── hooks/
+│       └── api/
+├── components/                 # 共通コンポーネント
+│   ├── ui/                     # 基本UIコンポーネント
+│   └── layouts/
+├── lib/                        # ライブラリ設定
+│   ├── api/                    # APIクライアント + TanStack Query
+│   └── auth/
+├── hooks/                      # 汎用カスタムフック
+├── types/                      # グローバル型定義
+├── utils/                      # ユーティリティ (cn.ts, format.ts など)
+└── constants/                  # 定数 (api.ts, routes.ts)
 ```
+
+詳細は `.github/copilot-instructions.md` を参照してください。
+
+## アーキテクチャ原則
+
+### Feature-Sliced Design
+
+- 機能ごとに `features/` 配下でモジュール化
+- 各機能は独立性を保つ（`components/`, `hooks/`, `api/` を持つ）
+
+### API 統合
+
+1. `constants/api.ts` でエンドポイント定義
+2. `features/[機能]/api/` で API 呼び出し実装
+3. `features/[機能]/hooks/` で TanStack Query ラップ
+4. コンポーネントでカスタムフックを使用
+
+### ルーティング
+
+- TanStack Router のファイルベースルーティング
+- 認証が必要なルートは `useAuthGuard()` を呼び出す
+
+### スタイリング
+
+- Tailwind CSS を使用
+- `utils/cn.ts` でクラス名をマージ
 
 ## 実装時のチェックポイント
 
 - [ ] 型は明示的に定義されているか
 - [ ] 環境変数は `import.meta.env` でアクセスしているか
-- [ ] 認証が必要な箇所で認証チェックがあるか
+- [ ] 認証が必要なルートで `useAuthGuard()` を呼んでいるか
+- [ ] API 呼び出しは `features/*/api/` に配置しているか
+- [ ] TanStack Query でラップしているか
+- [ ] Tailwind CSS でスタイリングしているか
 - [ ] エラーハンドリングは実装されているか
-- [ ] コンソールエラーが出ていないか
+
+## 新機能の追加手順
+
+1. `features/[機能名]/` ディレクトリを作成
+2. `types.ts` で型定義
+3. `api/` で API 呼び出し実装
+4. `hooks/` で TanStack Query ラップ
+5. `components/` で UI コンポーネント作成
+6. `routes/` でルート追加

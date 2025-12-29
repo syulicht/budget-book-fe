@@ -2,14 +2,17 @@
 
 ## プロジェクト概要
 
-家計簿アプリケーションのフロントエンド。React + TypeScript + Vite で構築され、AWS Cognito による OIDC 認証を実装しています。
+家計簿アプリケーションのフロントエンド。React + TypeScript + Vite で構築され、AWS Cognito Hosted UI による OIDC 認証を実装しています。
 
 ## テックスタック
 
 - **フレームワーク**: React 19.2.0
 - **言語**: TypeScript 5.9.3
 - **ビルドツール**: Vite 7.2.4
-- **認証**: oidc-client-ts, react-oidc-context
+- **認証**: AWS Cognito Hosted UI (oidc-client-ts, react-oidc-context)
+- **ルーティング**: TanStack Router
+- **データ取得**: TanStack Query
+- **スタイリング**: Tailwind CSS
 - **リンター**: ESLint 9.39.1
 
 ## コーディング規約
@@ -63,33 +66,136 @@ VITE_COGNITO_DOMAIN;
 
 ```
 src/
-├── App.tsx           # メインアプリケーションコンポーネント
-├── main.tsx          # エントリーポイント
-├── types/            # 型定義
-│   └── auth.ts       # 認証関連の型
-├── assets/           # 画像などの静的ファイル
-└── *.css             # スタイルシート
+├── main.tsx                    # エントリーポイント
+├── App.tsx                     # ルートコンポーネント
+├── index.css                   # Tailwind CSS
+├── vite-env.d.ts
+│
+├── routes/                     # TanStack Router のルート定義
+│   ├── __root.tsx              # ルートレイアウト
+│   ├── index.tsx               # トップページ
+│   ├── callback.tsx            # Cognito コールバック処理
+│   ├── dashboard/              # ダッシュボード
+│   ├── transactions/           # 取引関連ルート
+│   ├── categories/             # カテゴリ管理
+│   └── settings/               # 設定
+│
+├── features/                   # 機能ごとのモジュール
+│   ├── auth/                   # 認証機能
+│   │   └── hooks/              # useAuthGuard など
+│   ├── transactions/           # 取引機能
+│   │   ├── components/         # TransactionList, TransactionForm など
+│   │   ├── hooks/              # useTransactions など
+│   │   └── api/                # 取引API呼び出し
+│   ├── categories/             # カテゴリ機能
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   └── api/
+│   └── dashboard/              # ダッシュボード機能
+│       ├── components/
+│       └── hooks/
+│
+├── components/                 # 共通コンポーネント
+│   ├── ui/                     # Tailwind ベースの基本UIコンポーネント
+│   │   ├── Button.tsx
+│   │   ├── Input.tsx
+│   │   └── Card.tsx
+│   └── layouts/                # レイアウトコンポーネント
+│       ├── AuthLayout.tsx
+│       └── Header.tsx
+│
+├── lib/                        # ライブラリ設定・ラッパー
+│   ├── api/                    # API クライアント設定
+│   │   ├── client.ts           # Axios + 認証トークン設定
+│   │   └── queryClient.ts      # TanStack Query の設定
+│   ├── auth/                   # 認証設定
+│   │   └── config.ts           # Cognito 設定
+│   └── router.ts               # TanStack Router の設定
+│
+├── hooks/                      # 汎用カスタムフック
+│   ├── useLocalStorage.ts
+│   └── useDebounce.ts
+│
+├── types/                      # グローバル型定義
+│   ├── auth.ts                 # 認証関連
+│   ├── api.ts                  # API レスポンス型
+│   └── index.ts
+│
+├── utils/                      # ユーティリティ関数
+│   ├── format.ts               # 日付・金額フォーマット
+│   ├── validation.ts           # バリデーション
+│   └── cn.ts                   # Tailwind clsx helper
+│
+├── constants/                  # 定数
+│   ├── api.ts                  # API エンドポイント
+│   ├── routes.ts               # ルートパス定義
+│   └── config.ts
+│
+└── assets/                     # 静的ファイル
+    ├── images/
+    └── icons/
 ```
 
 ## ベストプラクティス
 
+### アーキテクチャ
+
+- **Feature-Sliced Design**: 機能ごとにモジュールを分割（features/）
+- 各機能モジュールは独立性を保ち、他機能への依存を最小化
+- 共通コンポーネントは components/ に配置
+
 ### コンポーネント設計
 
 - 単一責任の原則を守る
-- 再利用可能なコンポーネントは共通ディレクトリに配置する
+- 再利用可能なコンポーネントは components/ui/ に配置
 - Props の型は interface または type で明示的に定義する
+- Tailwind CSS でスタイリング（インラインクラス使用）
+
+### ルーティング
+
+- TanStack Router のファイルベースルーティングを使用
+- 各ルートは routes/ ディレクトリに配置
+- 認証が必要なルートでは `useAuthGuard()` を呼び出す
+
+### データ取得
+
+- TanStack Query を使用
+- クエリキーは機能ごとに定義（例: `transactionKeys`）
+- API 呼び出しは features/\*/api/ に配置
+- カスタムフックで TanStack Query をラップ（例: `useTransactions()`）
+
+### 状態管理
+
+- サーバー状態: TanStack Query
+- UI 状態: React Hooks (useState, useReducer)
+- グローバル状態: Context API（必要に応じて）
+
+### スタイリング
+
+- Tailwind CSS を使用
+- カスタムユーティリティは index.css の @layer で定義
+- clsx + tailwind-merge を使った cn() 関数でクラス名を結合
 
 ### エラーハンドリング
 
 - 認証エラーは適切にキャッチして処理する
+- TanStack Query のエラーハンドリング機能を活用
 - ユーザーにわかりやすいエラーメッセージを表示する
 - console.error を使用してデバッグ情報を出力する
+
+### API 統合
+
+- Axios を使用してバックエンド API と通信
+- lib/api/client.ts でリクエストインターセプターを設定
+- 認証トークンを自動的にヘッダーに付与
+- エンドポイントは constants/api.ts で一元管理
 
 ### パフォーマンス
 
 - 不要な再レンダリングを避ける
 - 必要に応じて `useMemo` や `useCallback` を使用する
-- Lazy loading を検討する
+- TanStack Router の Lazy loading を活用
+- 画像の最適化（WebP, lazy loading）
 
 ## コマンド
 
@@ -115,3 +221,46 @@ aws s3 sync dist/ s3://mm-app-fe-bucket
 - 新しい依存関係を追加する際は、必要性を検討する
 - セキュリティに配慮し、認証トークンやシークレットをコードに直接記述しない
 - AWS リソースへのアクセスは認証済みユーザーのみに制限する
+- コンポーネントファイルは PascalCase（例: `TransactionList.tsx`）
+- ユーティリティファイルは camelCase（例: `formatDate.ts`）
+- 機能を実装する際は対応する features/ 配下に配置する
+- API 呼び出しは必ず features/\*/api/ に配置し、カスタムフックでラップする
+
+## ドキュメント管理
+
+プロジェクトの構造や設計に関する変更を行った場合は、関連するドキュメントを更新してください:
+
+### ドキュメント更新の原則
+
+- **一貫性の維持**: コードとドキュメントの内容を一致させる
+- **即時更新**: 変更と同時にドキュメントも更新する
+- **複数箇所の確認**: 変更が影響する全てのドキュメントを更新する
+
+### 主なドキュメント
+
+- GitHub Copilot の指示書（`.github/copilot-instructions.md`）
+- エージェント用ガイド（`.github/agents/`）
+- Serena MCP のメモリ（`.serena/memories/`）
+- プロジェクト README
+
+### 更新のトリガー
+
+アーキテクチャ、ツール、規約など、開発に影響する変更を行った際は、対応するドキュメントの更新を忘れずに実施してください。
+
+## 開発ワークフロー
+
+### 新機能の追加手順
+
+1. `features/[機能名]/` ディレクトリを作成
+2. `types.ts` で型定義を作成
+3. `api/` で API 呼び出しを実装
+4. `hooks/` でカスタムフックを作成（TanStack Query でラップ）
+5. `components/` で UI コンポーネントを作成
+6. `routes/` でルートを追加
+
+### API 統合の手順
+
+1. `constants/api.ts` にエンドポイントを定義
+2. `features/[機能名]/api/` に API 関数を実装
+3. `features/[機能名]/hooks/` でカスタムフックを作成
+4. コンポーネントでカスタムフックを使用

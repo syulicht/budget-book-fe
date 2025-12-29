@@ -1,42 +1,85 @@
 # コードスタイルと規約
 
-## TypeScript設定
-- **TypeScript**: 5.9系を使用
+## TypeScript 設定
+
+- **TypeScript**: 5.9 系を使用（strict mode）
 - **設定ファイル**:
   - `tsconfig.json`: プロジェクトルート設定（参照のみ）
   - `tsconfig.app.json`: アプリケーションコード用
   - `tsconfig.node.json`: ビルドツール/設定ファイル用
+- **型定義**: `any` の使用は禁止、明示的な型定義を使用
 
-## ESLint設定
-- **設定ファイル**: `eslint.config.js`（Flat Config形式）
+## ESLint 設定
+
+- **設定ファイル**: `eslint.config.js`（Flat Config 形式）
 - **ルールセット**:
-  - `@eslint/js`: JavaScript推奨ルール
-  - `typescript-eslint`: TypeScript推奨ルール
-  - `eslint-plugin-react-hooks`: Reactフック関連ルール
-  - `eslint-plugin-react-refresh`: Fast Refresh対応
+  - `@eslint/js`: JavaScript 推奨ルール
+  - `typescript-eslint`: TypeScript 推奨ルール
+  - `eslint-plugin-react-hooks`: React フック関連ルール
+  - `eslint-plugin-react-refresh`: Fast Refresh 対応
 - **対象ファイル**: `**/*.{ts,tsx}`
 - **除外**: `dist/`ディレクトリ
 - **ECMAScript**: 2020
 
 ## コーディングスタイル
-- **関数コンポーネント**: 関数宣言形式を使用 (`function App() {}`)
-- **型注釈**: 
-  - 明示的な型定義（`type` または `interface`）
-  - Cognitoのカスタム型は `types/` ディレクトリに配置
-- **import文**:
+
+### React
+
+- **コンポーネント**: 関数コンポーネントのみ使用
+- **命名**: コンポーネント名は PascalCase
+- **ファイル名**: `ComponentName.tsx`
+
+### TypeScript
+
+- **型定義**:
+  - `src/types/` にグローバル型定義を配置
+  - 機能固有の型は各 `features/*/types.ts` に配置
+  - Props の型は interface または type で明示的に定義
+- **import 文**:
   - 外部ライブラリが先
   - ローカルモジュールが後
-  - 型importには `type` キーワードを使用 (`import type { ... }`)
-- **スタイリング**: 
-  - CSS Modulesまたは通常のCSS
-  - インラインスタイル（`style`）も許容
+  - 型 import には `type` キーワードを使用 (`import type { ... }`)
 
-## React規約
+### スタイリング
+
+- **Tailwind CSS**: インラインクラスでスタイリング
+- **クラス名マージ**: `utils/cn.ts` の `cn()` 関数を使用
+- **カスタムユーティリティ**: `index.css` の `@layer` で定義
+
+## ディレクトリ構造規約
+
+### features/ （機能モジュール）
+
+- 機能ごとに独立したモジュールとして配置
+- 各機能は `components/`, `hooks/`, `api/` を持つ
+- 他機能への依存は最小化
+
+### components/ （共通コンポーネント）
+
+- `ui/`: 基本 UI コンポーネント（Button, Input, Card など）
+- `layouts/`: レイアウトコンポーネント（Header, Sidebar など）
+
+### lib/ （ライブラリ設定）
+
+- `api/`: API クライアント設定 + TanStack Query 設定
+- `auth/`: 認証設定
+
+## React 規約
+
 - **Strict Mode**: 使用
-- **フック使用**: react-oidc-contextの`useAuth`フックを認証で使用
-- **型アサーション**: 必要に応じて型アサーション（`as CognitoUser`）を使用
+- **フック使用**:
+  - `useAuth`: 認証状態の取得（react-oidc-context）
+  - `useQuery`, `useMutation`: データフェッチング（TanStack Query）
+  - カスタムフックは `hooks/` または `features/*/hooks/` に配置
 
 ## ファイル命名
-- **コンポーネント**: PascalCase（`App.tsx`）
-- **型定義ファイル**: camelCase（`auth.ts`）
-- **設定ファイル**: kebab-caseまたはcamelCase
+
+- **コンポーネント**: PascalCase（`TransactionList.tsx`）
+- **ユーティリティ**: camelCase（`formatDate.ts`）
+- **型定義ファイル**: camelCase（`auth.ts`, `api.ts`）
+- **設定ファイル**: kebab-case または camelCase
+
+## 環境変数
+
+- **アクセス方法**: `import.meta.env.VITE_*`
+- **禁止**: `process.env` の使用（Node.js 用）
