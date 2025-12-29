@@ -67,6 +67,25 @@ VITE_API_BASE_URL=
 npm run dev
 ```
 
+### Code Quality
+
+```bash
+# ESLint check
+npm run lint
+
+# ESLint auto-fix
+npm run lint:fix
+
+# Prettier format
+npm run format
+
+# Prettier check
+npm run format:check
+
+# TypeScript type check
+npm run type-check
+```
+
 ### Build
 
 ```bash
@@ -78,6 +97,35 @@ npm run build
 ```bash
 npm run preview
 ```
+
+## Code Quality Tools
+
+### ESLint
+
+- TypeScript strict mode with type-checking
+- React and React Hooks rules
+- Import organization (alphabetical, grouped)
+- Integrated with Prettier
+
+### Prettier
+
+- Single quotes
+- No semicolons
+- 100 character line width
+- Auto-format on save in VS Code
+
+### GitHub Actions
+
+- **Lint Workflow**: Runs on all branches except main and all PRs
+  - ESLint check
+  - Prettier format check
+  - TypeScript type check
+
+- **Deploy Workflow**: Runs on main branch pushes
+  - All lint checks
+  - Build
+  - Deploy to S3
+  - CloudFront cache invalidation
 
 ### Deploy
 

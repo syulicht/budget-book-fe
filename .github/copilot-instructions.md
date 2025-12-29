@@ -14,6 +14,31 @@
 - **データ取得**: TanStack Query
 - **スタイリング**: Tailwind CSS
 - **リンター**: ESLint 9.39.1
+- **フォーマッター**: Prettier 3.7.4
+- **CI/CD**: GitHub Actions
+
+## コード品質
+
+### ESLint
+
+- TypeScript strict mode + type-checked を使用
+- `@typescript-eslint/no-explicit-any` でanyを禁止
+- React、React Hooks のルールを適用
+- import文の自動整理（アルファベット順、グループ分け）
+- 設定ファイル: `eslint.config.js`
+
+### Prettier
+
+- シングルクォート使用
+- セミコロンなし
+- printWidth: 100
+- 設定ファイル: `.prettierrc`
+- VSCode保存時に自動フォーマット（`.vscode/settings.json`）
+
+### GitHub Actions
+
+- **lint.yml**: mainブランチ以外のpushとすべてのPRでlint/format/型チェック実行
+- **deploy.yml**: mainブランチへのpushでlint/format/型チェック + ビルド + デプロイ実行
 
 ## コーディング規約
 
@@ -47,12 +72,12 @@
 ### 必要な環境変数
 
 ```typescript
-VITE_AWS_REGION;
-VITE_COGNITO_USER_POOL_ID;
-VITE_COGNITO_APP_CLIENT_ID;
-VITE_REDIRECT_URI;
-VITE_LOGOUT_URI;
-VITE_COGNITO_DOMAIN;
+VITE_AWS_REGION
+VITE_COGNITO_USER_POOL_ID
+VITE_COGNITO_APP_CLIENT_ID
+VITE_REDIRECT_URI
+VITE_LOGOUT_URI
+VITE_COGNITO_DOMAIN
 ```
 
 ### 認証フロー
@@ -225,27 +250,6 @@ aws s3 sync dist/ s3://mm-app-fe-bucket
 - ユーティリティファイルは camelCase（例: `formatDate.ts`）
 - 機能を実装する際は対応する features/ 配下に配置する
 - API 呼び出しは必ず features/\*/api/ に配置し、カスタムフックでラップする
-
-## ドキュメント管理
-
-プロジェクトの構造や設計に関する変更を行った場合は、関連するドキュメントを更新してください:
-
-### ドキュメント更新の原則
-
-- **一貫性の維持**: コードとドキュメントの内容を一致させる
-- **即時更新**: 変更と同時にドキュメントも更新する
-- **複数箇所の確認**: 変更が影響する全てのドキュメントを更新する
-
-### 主なドキュメント
-
-- GitHub Copilot の指示書（`.github/copilot-instructions.md`）
-- エージェント用ガイド（`.github/agents/`）
-- Serena MCP のメモリ（`.serena/memories/`）
-- プロジェクト README
-
-### 更新のトリガー
-
-アーキテクチャ、ツール、規約など、開発に影響する変更を行った際は、対応するドキュメントの更新を忘れずに実施してください。
 
 ## 開発ワークフロー
 
