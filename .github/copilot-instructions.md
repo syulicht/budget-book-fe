@@ -13,6 +13,8 @@
 - **ルーティング**: TanStack Router
 - **データ取得**: TanStack Query
 - **スタイリング**: Tailwind CSS
+- **アイコン**: lucide-react
+- **UI開発**: Storybook 10.1.10
 - **リンター**: ESLint 9.39.1
 - **フォーマッター**: Prettier 3.7.4
 - **CI/CD**: GitHub Actions
@@ -174,7 +176,24 @@ src/
 - 単一責任の原則を守る
 - 再利用可能なコンポーネントは components/ui/ に配置
 - Props の型は interface または type で明示的に定義する
+- コンポーネントごとにディレクトリを作成し、その中に `.tsx` と `.stories.tsx` を配置する
+  - 例: `components/layouts/Sidebar/Sidebar.tsx`, `components/layouts/Sidebar/Sidebar.stories.tsx`
 - Tailwind CSS でスタイリング（インラインクラス使用）
+- className の結合には `utils/cn.ts` の `cn()` ユーティリティを使用
+
+#### Storybookストーリーの書き方
+
+- 各コンポーネントに対応する `.stories.tsx` ファイルを作成
+- コンポーネントの主要なバリエーション（デフォルト、ホバー、無効化など）をストーリーとして定義
+- Args を使用して Props を動的に変更可能にする
+- アクセシビリティアドオンを活用してa11yを検証
+
+#### lucide-react アイコンの使用方法
+
+- `lucide-react` からアイコンをインポート: `import { IconName } from 'lucide-react'`
+- コンポーネントとして使用: `<IconName className="h-5 w-5" />`
+- サイズは Tailwind クラスで指定（例: `h-[18px] w-[18px]`）
+- 色は親要素の `text-*` クラスを継承
 
 ### ルーティング
 
@@ -197,9 +216,10 @@ src/
 
 ### スタイリング
 
-- Tailwind CSS を使用
-- カスタムユーティリティは index.css の @layer で定義
-- clsx + tailwind-merge を使った cn() 関数でクラス名を結合
+- Tailwind CSS v4 を使用
+- カスタムカラーは `index.css` の `@theme` ディレクティブで定義
+- className の結合には `utils/cn.ts` の `cn()` 関数を使用
+- 任意値は `[]` で指定（例: `text-[18px]`, `gap-[16px]`）
 
 ### エラーハンドリング
 
@@ -227,10 +247,12 @@ src/
 ### 開発
 
 ```bash
-npm run dev          # 開発サーバー起動
-npm run build        # プロダクションビルド
-npm run lint         # ESLint チェック
-npm run preview      # ビルド結果のプレビュー
+npm run dev                # 開発サーバー起動
+npm run build              # プロダクションビルド
+npm run lint               # ESLint チェック
+npm run preview            # ビルド結果のプレビュー
+npm run storybook          # Storybook 起動 (http://localhost:6006)
+npm run build-storybook    # Storybook 静的ビルド
 ```
 
 ### デプロイ
@@ -260,7 +282,17 @@ aws s3 sync dist/ s3://mm-app-fe-bucket
 3. `api/` で API 呼び出しを実装
 4. `hooks/` でカスタムフックを作成（TanStack Query でラップ）
 5. `components/` で UI コンポーネントを作成
-6. `routes/` でルートを追加
+6. 対応する `.stories.tsx` を作成し、Storybook で動作確認
+7. `routes/` でルートを追加
+
+### Storybook を使ったコンポーネント開発ワークフロー
+
+1. **コンポーネント作成**: `ComponentName.tsx` を作成
+2. **ストーリー作成**: `ComponentName.stories.tsx` を作成
+3. **開発**: `npm run storybook` でStorybookを起動し、コンポーネントを確認しながら開発
+4. **アクセシビリティ検証**: Storybookのa11yアドオンでアクセシビリティをチェック
+5. **バリエーション確認**: 各種Propsパターンをストーリーで検証
+6. **デザインレビュー**: StorybookのURLを共有してデザイナー・非エンジニアとレビュー
 
 ### API 統合の手順
 
