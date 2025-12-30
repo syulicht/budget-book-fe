@@ -10,6 +10,8 @@
 - **TanStack Router** - ルーティング
 - **TanStack Query** - データフェッチング
 - **Tailwind CSS** - スタイリング
+- **lucide-react** - アイコンライブラリ
+- **Storybook** - UIコンポーネント開発・ドキュメント
 - **AWS Cognito** - 認証 (Hosted UI)
 
 ## Project Structure
@@ -66,6 +68,24 @@ VITE_API_BASE_URL=
 ```bash
 npm run dev
 ```
+
+### Storybook
+
+UIコンポーネントの開発・確認環境として [Storybook](https://storybook.js.org/) を導入しています。
+
+```bash
+# 開発サーバー起動
+npm run storybook
+```
+
+Access at http://localhost:6006
+
+```bash
+# 静的ビルド生成
+npm run build-storybook
+```
+
+StorybookはUIコンポーネントの単体開発・アクセシビリティ検証・デザインレビューに活用できます。
 
 ### Code Quality
 
