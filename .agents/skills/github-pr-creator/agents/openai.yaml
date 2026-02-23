@@ -1,0 +1,4 @@
+interface:
+  display_name: "GitHub PR 作成"
+  short_description: "FE差分から日本語のPR本文を生成し必要時のみPR操作"
+  default_prompt: "Use $github-pr-creator to git差分を要約し、日本語のPRタイトル/本文を作成してください。CLIでのPR作成は私が明示した場合のみ実行してください。"
