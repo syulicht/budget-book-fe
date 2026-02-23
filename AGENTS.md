@@ -1,5 +1,3 @@
-# GitHub Copilot Instructions - Budget Book FE
-
 ## プロジェクト概要
 
 家計簿アプリケーションのフロントエンド。React + TypeScript + Vite で構築され、AWS Cognito Hosted UI による OIDC 認証を実装しています。
