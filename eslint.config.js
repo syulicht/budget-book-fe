@@ -11,7 +11,7 @@ import importPlugin from 'eslint-plugin-import'
 import prettierConfig from 'eslint-config-prettier'
 
 export default [
-  { ignores: ['dist', 'node_modules', '.vite', '*.config.js', '*.config.ts'] },
+  { ignores: ['dist', 'node_modules', '.vite', 'storybook-static', '*.config.js', '*.config.ts'] },
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   prettierConfig,
