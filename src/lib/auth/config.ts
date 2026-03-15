@@ -17,9 +17,9 @@ export const cognitoAuthSettings: UserManagerSettings = {
   scope: 'openid email',
   automaticSilentRenew: true,
   silent_redirect_uri: silentRedirectUri,
-  userStore: new WebStorageStateStore({ store: window.localStorage }),
+  userStore: new WebStorageStateStore({ store: globalThis.localStorage }),
 }
 
 export const onSigninCallback = (): void => {
-  window.history.replaceState({}, document.title, window.location.pathname)
+  globalThis.history.replaceState({}, document.title, globalThis.location.pathname)
 }
