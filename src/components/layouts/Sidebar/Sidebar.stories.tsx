@@ -30,7 +30,7 @@ export const ActiveItem: Story = {
   args: {
     userName: '山田太郎',
     items: DEFAULT_SIDEBAR_ITEMS,
-    activeKey: 'transactions',
+    activeKey: 'budgets',
   },
 }
 
@@ -47,7 +47,7 @@ export const LongUserName: Story = {
   args: {
     userName: 'とても長い表示名を持つユーザーサンプル',
     items: DEFAULT_SIDEBAR_ITEMS,
-    activeKey: 'master',
+    activeKey: 'settings',
   },
 }
 
