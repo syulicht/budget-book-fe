@@ -1,10 +1,12 @@
 import type { LucideIcon } from 'lucide-react'
 
-export type SidebarNavKey = 'dashboard' | 'transactions' | 'analytics' | 'master'
+export type SidebarRoutePath = '/dashboard' | '/budgets' | '/analytics' | '/settings'
+
+export type SidebarNavKey = 'dashboard' | 'budgets' | 'analytics' | 'settings'
 
 export interface SidebarNavItem {
   key: SidebarNavKey
   label: string
-  to: string
+  to: SidebarRoutePath
   Icon: LucideIcon
 }

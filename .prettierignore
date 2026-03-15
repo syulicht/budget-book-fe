@@ -19,3 +19,6 @@ build
 *.log
 coverage
 .DS_Store
+
+# Generated files
+src/routeTree.gen.ts
