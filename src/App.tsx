@@ -52,8 +52,7 @@ function App() {
     } catch (error) {
       console.error('Failed to fetch budgets', error)
 
-      const message =
-        error instanceof Error ? error.message : '不明なエラーが発生しました。'
+      const message = error instanceof Error ? error.message : '不明なエラーが発生しました。'
       setBudgetsProbeState('error')
       setBudgetsProbeMessage(`GET /budgets の呼び出しに失敗しました: ${message}`)
     }
