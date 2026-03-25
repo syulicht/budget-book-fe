@@ -1,19 +1,6 @@
-import apiClient from '../../../lib/api/client'
+import type { BudgetListResponse } from '@/types/budget'
 
-export interface BudgetListItem {
-  id: number
-  date: string
-  category: {
-    id: number
-    name: string
-  }
-  amount: number
-  memo: string
-}
-
-export interface BudgetListResponse {
-  budgets: BudgetListItem[]
-}
+import apiClient from '@/lib/api/client'
 
 export const getBudgets = async (): Promise<BudgetListResponse> => {
   const response = await apiClient.get<BudgetListResponse>('/budgets')

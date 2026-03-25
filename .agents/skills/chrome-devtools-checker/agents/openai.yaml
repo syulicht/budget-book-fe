@@ -1,0 +1,4 @@
+interface:
+  display_name: "Chrome DevTools 動作確認"
+  short_description: "chrome-devtools MCPで画面動作確認を自動実行する"
+  default_prompt: "Use $chrome-devtools-checker to chrome-devtools MCPで動作確認を実施し、未起動ならnpm run devで起動してから日本語で結果を報告してください。"
