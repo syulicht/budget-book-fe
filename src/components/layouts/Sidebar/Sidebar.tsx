@@ -1,3 +1,5 @@
+import { LogOut } from 'lucide-react'
+
 import type { SidebarNavItem, SidebarNavKey } from '@/types/navigation'
 
 const DEFAULT_AVATAR_URL = 'https://api.dicebear.com/7.x/bottts/svg?seed=User'
@@ -7,6 +9,7 @@ interface Props {
   items: readonly SidebarNavItem[]
   activeKey: SidebarNavKey | null
   onSelect?: (item: SidebarNavItem) => void
+  onSignOut?: () => void
   avatarUrl?: string
 }
 
@@ -15,6 +18,7 @@ export const Sidebar = ({
   items,
   activeKey,
   onSelect,
+  onSignOut,
   avatarUrl,
 }: Props): React.JSX.Element => {
   return (
@@ -56,6 +60,19 @@ export const Sidebar = ({
           })}
         </ul>
       </nav>
+
+      <div className="mx-[8px] border-t border-border px-[8px] py-[16px]">
+        <button
+          type="button"
+          onClick={onSignOut}
+          className="flex w-full items-center gap-[16px] rounded-[8px] p-[8px] text-left text-[14px] text-primary-text/80 transition-colors hover:bg-border/60 hover:text-primary-text"
+        >
+          <span className="flex h-[18px] w-[18px] items-center justify-center">
+            <LogOut className="h-[18px] w-[18px]" />
+          </span>
+          <span>ログアウト</span>
+        </button>
+      </div>
     </aside>
   )
 }

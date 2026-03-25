@@ -55,6 +55,17 @@ function AuthenticatedLayout(): React.JSX.Element {
     void navigate({ to: item.to })
   }
 
+  const handleSignOut = (): void => {
+    const clientId = import.meta.env.VITE_COGNITO_APP_CLIENT_ID
+    const logoutUri = import.meta.env.VITE_LOGOUT_URI
+    const cognitoDomain = import.meta.env.VITE_COGNITO_DOMAIN
+
+    void auth.removeUser()
+    globalThis.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(
+      logoutUri
+    )}`
+  }
+
   const userNameClaim = auth.user?.profile['cognito:username']
   const userName = typeof userNameClaim === 'string' ? userNameClaim : 'ユーザー'
 
@@ -90,6 +101,7 @@ function AuthenticatedLayout(): React.JSX.Element {
         items={DEFAULT_SIDEBAR_ITEMS}
         activeKey={activeNavKey}
         onSelect={handleSelect}
+        onSignOut={handleSignOut}
       />
       <main className="ml-[200px] min-h-screen p-[24px]">
         <Outlet />

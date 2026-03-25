@@ -59,3 +59,12 @@ export const OnSelectAction: Story = {
     onSelect: fn(),
   },
 }
+
+export const OnSignOutAction: Story = {
+  args: {
+    userName: 'ログアウト操作確認ユーザー',
+    items: DEFAULT_SIDEBAR_ITEMS,
+    activeKey: 'dashboard',
+    onSignOut: fn(),
+  },
+}
